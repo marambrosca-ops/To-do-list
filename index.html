@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do List</title>
+    <!-- Google Fonts: Poppins per un look moderno e geometrico -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --primary: #ff5e62;
+            --primary-hover: #ff9966;
+            --text-main: #2d3748;
+            --text-muted: #a0aec0;
+            --border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px;
+            border-radius: 24px;
+            /* Effetto tridimensionale ed elevazione profonda */
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px var(--border-color) inset;
+            width: 100%;
+            max-width: 420px;
+            transform: perspective(1000px) rotateX(2deg);
+            transition: transform 0.4s ease;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-3px);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 18px;
+            background: #ffffff;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            outline: none;
+            /* Effetto rientrato 3D */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.06), 0 0 10px rgba(102, 126, 234, 0.4);
+        }
+
+        button.add-btn {
+            padding: 0 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            /* Effetto rilievo 3D sul bottone */
+            box-shadow: 0 6px 15px rgba(118, 75, 162, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        button.add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        button.add-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 8px rgba(118, 75, 162, 0.4);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            padding: 14px 18px;
+            border-radius: 14px;
+            /* Effetto tridimensionale sporgente per ogni card task */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05),
+                        0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Classe per l'animazione di scomparsa quando spuntato */
+        li.fade-out {
+            opacity: 0;
+            transform: scale(0.9) translateX(30px);
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Checkbox personalizzata e tridimensionale */
+        .task-content input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: #edf2f7;
+            border-radius: 6px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .task-content input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            box-shadow: 0 4px 10px rgba(56, 161, 105, 0.4);
+        }
+
+        .task-content input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .task-text {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+            transition: color 0.2s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>To-do List</h2>
+    <div class="input-group">
+        <input type="text" id="taskInput" onkeypress="if(event.key === 'Enter') addTask()">
+        <button class="add-btn" onclick="addTask()">Aggiungi</button>
+    </div>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        const taskText = input.value.trim();
+        if (taskText === '') return;
+
+        const taskList = document.getElementById('taskList');
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <label class="task-content">
+                <input type="checkbox" onchange="completeTask(this)">
+                <span class="task-text">${escapeHTML(taskText)}</span>
+            </label>
+        `;
+        
+        taskList.appendChild(li);
+        input.value = '';
+    }
+
+    function completeTask(checkbox) {
+        const li = checkbox.closest('li');
+        li.classList.add('fade-out');
+        
+        // Rimuove l'elemento dopo la transizione fluida (400ms)
+        setTimeout(() => {
+            li.remove();
+        }, 400);
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+</script>
+
+</body>
+</html>
