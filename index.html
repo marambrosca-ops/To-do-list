@@ -2,33 +2,24 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <!-- Ottimizzazione viewport cruciale per iPhone (evita zoom indesiderati e gestisce la visuale a tutto schermo) -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Meta tag specifici per iOS (Web App Mode) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="To-do List">
 
     <title>To-do List</title>
-    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --primary: #ff5e62;
-            --primary-hover: #ff9966;
-            --text-main: #2d3748;
-            --text-muted: #a0aec0;
-            --border-color: rgba(255, 255, 255, 0.6);
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            /* Uso di -webkit-fill-available per calcolare perfettamente l'altezza su Safari mobile */
             min-height: 100vh;
             min-height: -webkit-fill-available;
             margin: 0;
@@ -36,8 +27,7 @@
             justify-content: center;
             align-items: center;
             padding: 16px;
-            /* Impedisce lo zoom elastico di Safari durante lo scroll del body */
-            overscroll-behavior-y: none;
+            overflow-x: hidden;
         }
 
         html {
@@ -45,28 +35,25 @@
         }
 
         .container {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: 25px 20px;
+            padding: 24px 18px;
             border-radius: 24px;
             box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                0 0 0 1px var(--border-color) inset;
+                0 20px 40px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.6) inset;
             width: 100%;
-            max-width: 420px;
-            /* Rimosso l'effetto 3D con rotazione fissa su mobile per evitare distorsioni su schermi piccoli */
+            max-width: 400px;
         }
 
         h2 {
             margin-top: 0;
             text-align: center;
-            color: var(--text-main);
+            color: #2d3748;
             font-weight: 700;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             margin-bottom: 20px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .input-group {
@@ -77,41 +64,38 @@
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 16px;
+            padding: 12px 14px;
             background: #ffffff;
-            border: 2px solid transparent;
-            border-radius: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-family: 'Poppins', sans-serif;
-            /* 16px impedisce lo zoom automatico di Safari su iOS quando si seleziona l'input */
             font-size: 16px; 
-            color: var(--text-main);
+            color: #2d3748;
             outline: none;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
-            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
+            transition: border-color 0.2s;
             -webkit-appearance: none;
         }
 
         input[type="text"]:focus {
             border-color: #667eea;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.06), 0 0 10px rgba(102, 126, 234, 0.4);
         }
 
         button.add-btn {
-            padding: 0 18px;
+            padding: 0 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(118, 75, 162, 0.4);
-            transition: all 0.2s ease;
-            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
         }
 
         button.add-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         ul {
@@ -120,90 +104,71 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 50vh;
+            gap: 10px;
+            max-height: 45vh;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* Scroll fluido su iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
         li {
             display: flex;
             align-items: center;
             background: #ffffff;
-            padding: 14px 16px;
-            border-radius: 14px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05),
-                        0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: slideIn 0.3s ease forwards;
-            position: relative;
-            overflow: hidden;
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
         }
 
         li.fade-out {
             opacity: 0;
-            transform: scale(0.9) translateX(30px);
+            transform: scale(0.9) translateX(20px);
             max-height: 0;
             padding-top: 0;
             padding-bottom: 0;
             margin-bottom: 0;
-            border: none;
         }
 
         .task-content {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             cursor: pointer;
             width: 100%;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Checkbox ottimizzata per iOS */
         .task-content input[type="checkbox"] {
             appearance: none;
             -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             background: #edf2f7;
             border-radius: 6px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #cbd5e0;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
             flex-shrink: 0;
         }
 
         .task-content input[type="checkbox"]:checked {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            box-shadow: 0 4px 10px rgba(56, 161, 105, 0.4);
+            background: #38a169;
+            border-color: #38a169;
         }
 
         .task-content input[type="checkbox"]:checked::after {
             content: '✔';
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
         }
 
         .task-text {
-            color: var(--text-main);
+            color: #2d3748;
             font-size: 0.95rem;
             font-weight: 500;
             word-break: break-word;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
@@ -225,7 +190,6 @@
         if (taskText === '') return;
 
         const taskList = document.getElementById('taskList');
-
         const li = document.createElement('li');
         li.innerHTML = `
             <label class="task-content">
@@ -236,16 +200,15 @@
         
         taskList.appendChild(li);
         input.value = '';
-        input.blur(); // Rimuove il focus su mobile per chiudere la tastiera dopo l'inserimento
+        input.blur();
     }
 
     function completeTask(checkbox) {
         const li = checkbox.closest('li');
         li.classList.add('fade-out');
-        
         setTimeout(() => {
             li.remove();
-        }, 400);
+        }, 300);
     }
 
     function escapeHTML(str) {
